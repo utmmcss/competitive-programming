@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 L = []
 n = int(input("n? "))
 for i in range(n):
@@ -7,42 +8,55 @@ for i in range(n):
 
 k = int(sqrt(n))
 
+# initialize the bucket index of every element, and calc sum of buckets
+
 bucket_index = [-1] * n
-bucket_sum = [0] * (k+1)
+bucket_sum = [0] * (n // k + 1)
 
 b_index = -1
 for i in range(n):
-	if i % k == 0:
+	if i % k == 0: # every time we reach beginning of new bucket
 		b_index += 1
 	bucket_index[i] = b_index
 	bucket_sum[b_index] += L[i]
 
-m = int(input("number of queries? "))
+m = int(input("num queries? "))
 
 while m > 0:
-	type = input("query type 1/2? ")
+	type = input("type 1/2? ")
 
 	if type == "1": # sum query
 		l = int(input("l? "))
 		r = int(input("r? "))
 		ans = 0
 		i = l
-		while i < r and i % k != 0:
+
+		# add everything after l that is not in the next bucket
+		while (i < r and i % k != 0):
 			ans += L[i]
 			i += 1
-		while i + k <= r:
-			ans += bucket_sum[i // k]
+
+		# sum up every bucket in between
+		while (i + k <= r):
+			ans += bucket_sum[bucket_index[i]]
 			i += k
 
-		while i <= r:
+		# sum up everything before r that is not in the previous bucket
+
+		while (i <= r):
 			ans += L[i]
 			i += 1
-		print("here is the answer:", ans)
-	else:
+
+		print("answer:", ans)
+
+	else: # update element query
 		ind = int(input("ind? "))
 		val = int(input("new val? "))
-		b_num = ind // k
+		b_num = bucket_index[ind]
 		bucket_sum[b_num] += val - L[ind]
 		L[ind] = val
-		print("query computations done")
-	m -= 1
+		print("query done!")
+
+	m -=1
+
+
